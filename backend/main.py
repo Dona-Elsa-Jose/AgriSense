@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.module1_irrigation.router import router as irrigation_router
-from backend.module2_recommendation.router import router as crop_router
+from backend.module2_recommendation.api import module2_router
 
 app = FastAPI(
     title="AgriSense API Hub",
@@ -20,7 +20,7 @@ app.add_middleware(
 
 # Include Module Routers
 app.include_router(irrigation_router)
-app.include_router(crop_router)
+app.include_router(module2_router)
 
 @app.get("/")
 def root():
