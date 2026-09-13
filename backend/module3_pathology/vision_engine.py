@@ -10,7 +10,9 @@ import json
 from dotenv import load_dotenv
 from PIL import Image, ImageFilter, ImageStat
 
-# Load environment variables from .env
+# Load environment variables from .env in backend directory or root
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(env_path)
 load_dotenv()
 
 try:
@@ -49,7 +51,7 @@ Return ONLY a valid JSON object with the following exact keys:
 Do NOT guess from any metadata. Analyze the pixels directly.
 """
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.6-flash",
             contents=[
                 genai.types.Part.from_bytes(
                     data=image_bytes,
