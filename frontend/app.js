@@ -17,9 +17,7 @@ const webcam = document.getElementById("webcam");
 const snapBtn = document.getElementById("snapBtn");
 const closeCamBtn = document.getElementById("closeCamBtn");
 
-const apiKeyInput = document.getElementById("apiKeyInput");
-const toggleKeyVis = document.getElementById("toggleKeyVis");
-const statusText = document.getElementById("statusText");
+
 
 // Results Elements
 const emptyState = document.getElementById("emptyState");
@@ -46,24 +44,7 @@ const mNecrosis = document.getElementById("mNecrosis");
 const mChlorosis = document.getElementById("mChlorosis");
 const mEdge = document.getElementById("mEdge");
 
-// API Key event
-apiKeyInput.addEventListener("input", () => {
-  if (apiKeyInput.value.trim().length > 10) {
-    statusText.textContent = "Cloud Vision Connected";
-    statusText.style.color = "#38bdf8";
-  } else {
-    statusText.textContent = "Vision AI Ready";
-    statusText.style.color = "#6ee7b7";
-  }
-});
 
-toggleKeyVis.addEventListener("click", () => {
-  if (apiKeyInput.type === "password") {
-    apiKeyInput.type = "text";
-  } else {
-    apiKeyInput.type = "password";
-  }
-});
 
 // Drag and drop events
 dropZone.addEventListener("dragover", (e) => {
@@ -272,11 +253,6 @@ async function diagnoseLeaf() {
 
   const formData = new FormData();
   formData.append("file", currentImageFile);
-  
-  const key = apiKeyInput.value.trim();
-  if (key) {
-    formData.append("api_key", key);
-  }
 
   try {
     const response = await fetch("/api/diagnose", {

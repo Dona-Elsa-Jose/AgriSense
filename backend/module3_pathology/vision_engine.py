@@ -7,7 +7,12 @@ No filename checks are performed whatsoever.
 import os
 import io
 import json
+from dotenv import load_dotenv
 from PIL import Image, ImageFilter, ImageStat
+
+# Load environment variables from .env
+load_dotenv()
+
 try:
     from pathology_db import get_disease_info
 except ImportError:
