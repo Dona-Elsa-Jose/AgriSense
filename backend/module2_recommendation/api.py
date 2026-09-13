@@ -1,13 +1,14 @@
 from fastapi import APIRouter, HTTPException
-from schemas import SoilInput, Module2Response
 
-# Import Person A's work
-from crop_engine.predict import predict_crop 
+# 1. Shared schemas from the unified single source of truth
+from backend.schemas import SoilInput, Module2Response
 
-# Import Your work
-from fertilizer_engine.recommend import recommend_fertilizer 
+# 2. Person A's Crop Prediction Engine (relocated inside module2_recommendation)
+from backend.module2_recommendation.crop.predict import predict_crop 
 
-# Use APIRouter so this can be attached to the main project later
+# 3. Person B's Fertilizer Recommendation Engine (moved inside module2_recommendation/fertilizer)
+from backend.module2_recommendation.fertilizer.recommend import recommend_fertilizer 
+
 module2_router = APIRouter(
     prefix="/api/module2",
     tags=["Crop & Fertilizer Recommendation Engine"]
