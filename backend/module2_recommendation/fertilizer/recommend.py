@@ -10,9 +10,9 @@ from pathlib import Path
 # Ensures it can find schemas.py in the root directory above
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from schemas import SoilInput, FertilizerOutput, FertilizerPlanItem
-from fertilizer_engine.fertilizer import CROP_AGRONOMIC_TARGETS, DEFAULT_TARGET
-import fertilizer_engine.explain as explain
+from backend.schemas import SoilInput, FertilizerOutput, FertilizerPlanItem
+from backend.module2_recommendation.fertilizer.fertiliser import CROP_AGRONOMIC_TARGETS, DEFAULT_TARGET
+import backend.module2_recommendation.fertilizer.explain as explain
 
 
 def recommend_fertilizer(crop: str, soil: SoilInput) -> FertilizerOutput:
