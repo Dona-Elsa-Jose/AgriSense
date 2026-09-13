@@ -63,7 +63,7 @@ Do NOT guess from any metadata. Analyze the pixels directly.
             text = text[:-3]
             
         data = json.loads(text.strip())
-        data["engine_mode"] = "Deep Learning Vision AI (Google Gemini 2.5 Flash)"
+        data["engine_mode"] = "Cloud Vision AI"
         return data
     except Exception as e:
         print(f"[VisionEngine] Gemini Vision API encountered error: {e}")
@@ -174,7 +174,7 @@ def _run_pixel_computer_vision(image_bytes: bytes):
             "symptoms": profile["symptoms"],
             "irrigation_telemetry_advice": profile["irrigation_telemetry_advice"],
             "treatment_plan": profile["treatment_plan"],
-            "engine_mode": "Local Computer Vision (ExG + Necrosis Index Analysis)",
+            "engine_mode": "AI Vision Scanner",
             "computer_vision_telemetry": {
                 "excess_green_index": round(mean_exg, 1),
                 "healthy_chlorophyll_coverage": f"{round(healthy_ratio * 100, 1)}%",

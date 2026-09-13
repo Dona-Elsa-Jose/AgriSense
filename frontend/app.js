@@ -49,10 +49,10 @@ const mEdge = document.getElementById("mEdge");
 // API Key event
 apiKeyInput.addEventListener("input", () => {
   if (apiKeyInput.value.trim().length > 10) {
-    statusText.textContent = "Gemini Vision AI (Cloud Connected)";
+    statusText.textContent = "Cloud Vision Connected";
     statusText.style.color = "#38bdf8";
   } else {
-    statusText.textContent = "Local Pixel CV Engine";
+    statusText.textContent = "Vision AI Ready";
     statusText.style.color = "#6ee7b7";
   }
 });
@@ -320,7 +320,7 @@ function renderDiagnosis(data) {
   symptomsText.textContent = data.symptoms || "Visual symptoms analyzed.";
   irrigationAdvice.textContent = data.irrigation_telemetry_advice || "Maintain standard sensor moisture thresholds.";
 
-  engineBadge.textContent = data.engine_mode || "Computer Vision Verified";
+  engineBadge.textContent = data.engine_mode || "Diagnostic Verified";
 
   // CV telemetry badges
   if (data.computer_vision_telemetry) {
@@ -349,7 +349,7 @@ copyJsonBtn.addEventListener("click", () => {
   navigator.clipboard.writeText(JSON.stringify(lastDiagnosticResult, null, 2))
     .then(() => {
       const originalText = copyJsonBtn.textContent;
-      copyJsonBtn.textContent = "✅ JSON Copied to Clipboard!";
+      copyJsonBtn.textContent = "✅ Copied to Clipboard!";
       setTimeout(() => {
         copyJsonBtn.textContent = originalText;
       }, 2000);

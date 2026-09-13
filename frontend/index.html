@@ -26,15 +26,15 @@
         <input 
           type="password" 
           id="apiKeyInput" 
-          placeholder="Gemini API Key (Optional - Cloud Deep Learning)" 
-          title="Paste your Google Gemini API key to activate Deep Learning Vision, or leave empty for Local Pixel Computer Vision"
+          placeholder="Cloud API Key (Optional)" 
+          title="Optional API key for cloud vision"
         />
         <button id="toggleKeyVis" class="btn-icon" title="Toggle visibility">👁️</button>
       </div>
 
       <div class="system-status">
         <span class="status-dot"></span>
-        <span class="status-text" id="statusText">Pixel Vision Active</span>
+        <span class="status-text" id="statusText">Vision AI Ready</span>
       </div>
     </header>
 
@@ -43,8 +43,8 @@
       <!-- Left Column: Image Ingestion & Input -->
       <section class="card upload-card">
         <div class="card-header">
-          <h2>Leaf Image Capture</h2>
-          <span class="badge">Pure Pixel Analysis</span>
+          <h2>Leaf Scanner</h2>
+          <span class="badge">Active</span>
         </div>
 
         <!-- Drag & Drop Zone -->
@@ -52,13 +52,13 @@
           <input type="file" id="fileInput" accept="image/*" class="file-input" />
           <div class="drop-zone-content" id="dropZonePrompt">
             <div class="upload-icon">📸</div>
-            <p class="drop-text"><strong>Drag & drop any leaf photo</strong> or <span class="browse-btn">browse files</span></p>
-            <p class="drop-hint">Analyzes actual RGB pixel data (filename is 100% ignored)</p>
+            <p class="drop-text"><strong>Drag & drop leaf photo</strong> or <span class="browse-btn">browse files</span></p>
+            <p class="drop-hint">Supports JPEG, PNG, WebP</p>
           </div>
 
           <!-- Preview & Scan Laser Animation -->
           <div class="preview-container hidden" id="previewContainer">
-            <button id="removeImageBtn" class="remove-image-btn" title="Remove this image" type="button">✕ Remove Image</button>
+            <button id="removeImageBtn" class="remove-image-btn" title="Remove this image" type="button">✕ Remove</button>
             <img id="imagePreview" alt="Leaf preview" />
             <div class="scan-laser" id="scanLaser"></div>
           </div>
@@ -66,8 +66,8 @@
 
         <!-- Action Controls -->
         <div class="button-row">
-          <button id="cameraBtn" class="btn btn-secondary">📷 Open WebCam</button>
-          <button id="diagnoseBtn" class="btn btn-primary" disabled>🔬 Scan Leaf Pixels</button>
+          <button id="cameraBtn" class="btn btn-secondary">📷 Camera</button>
+          <button id="diagnoseBtn" class="btn btn-primary" disabled>🔬 Analyze Leaf</button>
         </div>
 
         <!-- Camera Video Feed -->
@@ -81,12 +81,12 @@
 
         <!-- Quick Demo Sample Selector -->
         <div class="sample-section">
-          <label>Generate Synthetic Test Leaves (Draws pixel patterns in canvas):</label>
+          <label>Test Samples:</label>
           <div class="sample-chips">
-            <button class="chip" data-sample="healthy">🌿 Vibrant Green Leaf</button>
-            <button class="chip" data-sample="bacterial_spots">🍂 Leaf with Necrotic Spots</button>
-            <button class="chip" data-sample="yellow_chlorosis">🌽 Yellowing Rust Leaf</button>
-            <button class="chip" data-sample="mildew_white">❄️ Powdery Patches</button>
+            <button class="chip" data-sample="healthy">🌿 Healthy Leaf</button>
+            <button class="chip" data-sample="bacterial_spots">🍂 Leaf Spots</button>
+            <button class="chip" data-sample="yellow_chlorosis">🌽 Rust Leaf</button>
+            <button class="chip" data-sample="mildew_white">❄️ Powdery Mildew</button>
           </div>
         </div>
       </section>
@@ -94,22 +94,22 @@
       <!-- Right Column: Diagnostic & Treatment Results -->
       <section class="card results-card" id="resultsCard">
         <div class="card-header">
-          <h2>Diagnostic & Clinical Prescription</h2>
+          <h2>Diagnostic Results</h2>
           <span id="engineBadge" class="badge">Awaiting Scan</span>
         </div>
 
         <!-- Default Empty State -->
         <div id="emptyState" class="empty-state">
           <div class="empty-icon">🔬</div>
-          <h3>No Diagnosis Yet</h3>
-          <p>Upload a real crop leaf photo, snap a frame, or generate a test leaf to run computer vision.</p>
+          <h3>Ready for Scan</h3>
+          <p>Upload or snap a leaf photo to diagnose plant health.</p>
         </div>
 
         <!-- Loading State -->
         <div id="loadingState" class="loading-state hidden">
           <div class="spinner"></div>
-          <h3>Running AI Vision Pipeline...</h3>
-          <p>Processing RGB matrices, chlorophyll indexes, and lesion boundaries</p>
+          <h3>Analyzing Leaf Pathology...</h3>
+          <p>Examining foliage health and pathogen symptoms</p>
         </div>
 
         <!-- Loaded Diagnosis Content -->
@@ -156,53 +156,53 @@
             <p id="symptomsText" class="symptoms-text">--</p>
           </div>
 
-          <!-- Module 1 Integration: Irrigation & Telemetry Link -->
+          <!-- Irrigation Telemetry Link -->
           <div class="telemetry-sync-box">
             <div class="sync-icon">💧</div>
             <div>
-              <strong>Telemetry Link (Module 1 Cross-Trigger):</strong>
+              <strong>Irrigation & Telemetry Advisory:</strong>
               <p id="irrigationAdvice">--</p>
             </div>
           </div>
 
           <!-- Step-by-Step Treatment Plan -->
           <div class="result-block">
-            <h3>Actionable Step-by-Step Treatment Plan</h3>
+            <h3>Treatment Plan</h3>
             <div class="steps-list">
               <div class="step-item">
                 <div class="step-num">1</div>
                 <div>
-                  <strong>Immediate Cultural Sanitation</strong>
+                  <strong>Immediate Action</strong>
                   <p id="step1">--</p>
                 </div>
               </div>
               <div class="step-item">
                 <div class="step-num">2</div>
                 <div>
-                  <strong>Organic / Bio-Control Remedy</strong>
+                  <strong>Organic / Bio-Control</strong>
                   <p id="step2">--</p>
                 </div>
               </div>
               <div class="step-item">
                 <div class="step-num">3</div>
                 <div>
-                  <strong>Chemical / Fungicide Intervention</strong>
+                  <strong>Chemical Treatment</strong>
                   <p id="step3">--</p>
                 </div>
               </div>
               <div class="step-item">
                 <div class="step-num">4</div>
                 <div>
-                  <strong>Long-Term Prevention & Field Strategy</strong>
+                  <strong>Prevention Strategy</strong>
                   <p id="step4">--</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Export JSON Button for Module 4 integration -->
+          <!-- Export Data Button -->
           <div class="export-row">
-            <button id="copyJsonBtn" class="btn btn-outline">📋 Copy JSON Response (For Module 4 Integration)</button>
+            <button id="copyJsonBtn" class="btn btn-outline">📋 Copy Diagnostic Data</button>
           </div>
         </div>
       </section>
