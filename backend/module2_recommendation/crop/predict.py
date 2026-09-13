@@ -1,7 +1,7 @@
 import os
 import pickle
 import pandas as pd
-from schemas import SoilInput, CropOutput, CropCandidate
+from backend.schemas import SoilInput, CropOutput, CropCandidate
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
 
