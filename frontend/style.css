@@ -252,6 +252,30 @@ body {
   object-fit: contain;
 }
 
+.remove-image-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(220, 38, 38, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.remove-image-btn:hover {
+  background: #ef4444;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
 .scan-laser {
   display: none;
   position: absolute;

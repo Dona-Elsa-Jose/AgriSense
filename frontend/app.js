@@ -105,6 +105,32 @@ function handleSelectedImage(file) {
   reader.readAsDataURL(file);
 }
 
+// Remove / Clear Image Button
+const removeImageBtn = document.getElementById("removeImageBtn");
+if (removeImageBtn) {
+  removeImageBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    clearSelectedImage();
+  });
+}
+
+function clearSelectedImage() {
+  currentImageFile = null;
+  fileInput.value = "";
+  imagePreview.src = "";
+  previewContainer.classList.add("hidden");
+  dropZonePrompt.classList.remove("hidden");
+  diagnoseBtn.disabled = true;
+
+  // Reset results panel
+  emptyState.classList.remove("hidden");
+  diagnosticResults.classList.add("hidden");
+  loadingState.classList.add("hidden");
+  engineBadge.textContent = "Awaiting Scan";
+  lastDiagnosticResult = null;
+}
+
 // WebCam Handling
 cameraBtn.addEventListener("click", async () => {
   try {
