@@ -1,12 +1,13 @@
 """
 AI Vision Pipeline Engine for Leaf Pathology Scanning
 STRICTLY PIXEL-BASED COMPUTER VISION.
-No filename checks are performed whatsoever.
+Deterministic via Temperature 0.0, Seed 42, and SHA-256 Image Caching.
 """
 
 import os
 import io
 import json
+import hashlib
 from dotenv import load_dotenv
 from PIL import Image, ImageFilter, ImageStat
 
@@ -20,56 +21,72 @@ try:
 except ImportError:
     from backend.module3_pathology.database import get_disease_info
 
+# In-memory SHA-256 cache ensuring 100% deterministic repeatability for identical images
+_IMAGE_CACHE = {}
+
 
 def _run_gemini_vision(image_bytes: bytes, api_key: str):
     """Deep learning multimodal vision diagnosis via Google Gemini Vision API."""
     try:
         from google import genai
+        from google.genai import types
+
         client = genai.Client(api_key=api_key)
         
         prompt = """
-You are an expert Agricultural Plant Pathologist and Computer Vision Agronomist.
-Analyze this leaf photograph carefully and diagnose any plant disease, pathogen, or deficiency purely from visual features.
+You are a deterministic Senior Agricultural Plant Pathologist and Computer Vision Agronomist.
+Analyze this leaf photograph carefully and provide ONE definitive, standardized plant pathology diagnosis.
+
+Guidelines for Consistency:
+1. Determine the single PRIMARY crop (e.g., Tomato, Potato, Corn, Apple, Rice, Grape, Pepper, Cotton, etc.).
+2. Determine the single PRIMARY disease based on pathognomonic visual symptoms:
+   - Concentric dark rings with yellow chlorotic halos on solanaceous leaves = Early Blight (Alternaria solani).
+   - Water-soaked dark brown irregular lesions with pale margins = Late Blight (Phytophthora infestans).
+   - Raised cinnamon-brown powdery pustules = Common Rust (Puccinia sorghi).
+   - White talcum-like powdery mycelium on leaf surface = Powdery Mildew.
+   - Small angular water-soaked dark spots = Bacterial Leaf Spot (Xanthomonas spp.).
+   - Clean green lamina with no lesions = Healthy Foliage.
+3. Be definitive: Do NOT mention alternative or conflicting diseases in the title. Choose the single most evident diagnosis.
 
 Return ONLY a valid JSON object with the following exact keys:
 {
   "is_plant_leaf": true or false,
-  "crop": "Detected crop name (e.g., Tomato, Potato, Corn, Apple, Rice, Grape, Pepper, etc.)",
-  "disease_name": "Specific disease name (or 'Healthy Foliage')",
-  "confidence_score": 96.5, // Float between 75.0 and 99.5 based on visual clarity
+  "crop": "Definitive Crop Name (e.g. Tomato, Corn, Potato, Apple, etc.)",
+  "disease_name": "Definitive Disease Name (or 'Healthy Foliage')",
+  "confidence_score": 96.5,
   "severity": "Low" | "Moderate" | "High" | "Critical" | "Optimal",
   "pathogen_type": "Fungal" | "Bacterial" | "Viral" | "Pest" | "None",
-  "symptoms": "Precise visual symptoms observed on this leaf (lesions, halo, pustules, chlorosis)",
+  "symptoms": "Precise visual symptoms observed on this leaf",
   "irrigation_telemetry_advice": "Actionable advice on soil moisture/irrigation adjustments",
   "treatment_plan": {
-    "step_1_immediate_action": "Urgent cultural action (e.g. prune foliage, isolate infected zone)",
-    "step_2_organic_control": "Natural/bio-remedy (e.g. Bacillus subtilis, copper soap, neem oil)",
-    "step_3_chemical_treatment": "Targeted active ingredient/fungicide with application advice",
-    "step_4_preventive_strategy": "Long-term preventative measure (crop rotation, resistant rootstock)"
+    "step_1_immediate_action": "Urgent cultural sanitation",
+    "step_2_organic_control": "Targeted organic / bio-control remedy",
+    "step_3_chemical_treatment": "Targeted chemical treatment / fungicide with dosage guidance",
+    "step_4_preventive_strategy": "Long-term prevention strategy"
   }
 }
-Do NOT guess from any metadata. Analyze the pixels directly.
 """
+        config = types.GenerateContentConfig(
+            temperature=0.0,
+            top_p=0.1,
+            seed=42,
+            response_mime_type="application/json"
+        )
+
         response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=[
-                genai.types.Part.from_bytes(
+                types.Part.from_bytes(
                     data=image_bytes,
                     mime_type="image/jpeg"
                 ),
                 prompt
-            ]
+            ],
+            config=config
         )
         
         text = response.text.strip()
-        if text.startswith("```json"):
-            text = text[7:]
-        if text.startswith("```"):
-            text = text[3:]
-        if text.endswith("```"):
-            text = text[:-3]
-            
-        data = json.loads(text.strip())
+        data = json.loads(text)
         data["engine_mode"] = "Cloud Vision AI"
         return data
     except Exception as e:
@@ -100,18 +117,14 @@ def _run_pixel_computer_vision(image_bytes: bytes):
         pixels = list(img_resized.getdata())
         
         # Step 1: Background Segmentation
-        # Neutral white, light gray, or void dark background is discarded
         leaf_pixels = []
         for r, g, b in pixels:
-            # White / Light Gray background check
             is_light_bg = (r > 200 and g > 200 and b > 200 and abs(r - g) < 25 and abs(g - b) < 25)
-            # Black void background check
             is_dark_bg = (r < 25 and g < 25 and b < 25)
             
             if not is_light_bg and not is_dark_bg:
                 leaf_pixels.append((r, g, b))
                 
-        # Fallback if entire image is uniform
         if len(leaf_pixels) < 50:
             leaf_pixels = pixels
 
@@ -150,23 +163,18 @@ def _run_pixel_computer_vision(image_bytes: bytes):
             selected_key = "powdery_mildew"
             conf = 93.5 + min(mildew_ratio * 15, 5.5)
         elif chlorosis_ratio > 0.20:
-            # High yellowing / rust pustules
             selected_key = "corn_common_rust"
             conf = 93.0 + min(chlorosis_ratio * 10, 6.0)
         elif necrotic_ratio >= 0.08:
-            # Concentric target lesions / heavy necrosis
             selected_key = "tomato_early_blight"
             conf = 94.0 + min(necrotic_ratio * 15, 5.0)
         elif necrotic_ratio >= 0.015 or edge_intensity > 22.0:
-            # Discrete water-soaked necrotic spots
             selected_key = "bacterial_leaf_spot"
             conf = 92.5 + min(necrotic_ratio * 30, 6.0)
         elif necrotic_ratio >= 0.002 or chlorosis_ratio >= 0.015 or edge_intensity > 15.0:
-            # Early micro-lesions / incipient pinprick spots detected!
             selected_key = "early_stage_foliar_lesions"
             conf = 91.5 + min(necrotic_ratio * 50, 6.5)
         else:
-            # Clean uniform green lamina with virtually zero necrosis
             selected_key = "healthy_leaf"
             conf = 97.0 + min(healthy_ratio * 2.5, 2.5)
 
@@ -210,12 +218,24 @@ def _run_pixel_computer_vision(image_bytes: bytes):
 def run_pipeline(image_bytes: bytes, custom_api_key: str = None):
     """
     Primary pipeline dispatcher:
-    Analyzes raw image bytes ONLY. Completely ignores filename metadata.
+    1. Checks SHA-256 image cache for 100% deterministic repeatability.
+    2. Runs Cloud Gemini Vision if API key is present.
+    3. Falls back to calibrated local Computer Vision engine.
     """
+    cache_key = hashlib.sha256(image_bytes).hexdigest()
+    if cache_key in _IMAGE_CACHE:
+        return dict(_IMAGE_CACHE[cache_key])
+
     key = custom_api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    result = None
+
     if key and len(key.strip()) > 10:
-        cloud_res = _run_gemini_vision(image_bytes, key.strip())
-        if cloud_res:
-            return cloud_res
+        result = _run_gemini_vision(image_bytes, key.strip())
             
-    return _run_pixel_computer_vision(image_bytes)
+    if not result:
+        result = _run_pixel_computer_vision(image_bytes)
+
+    if result:
+        _IMAGE_CACHE[cache_key] = result
+
+    return result
