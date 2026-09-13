@@ -103,6 +103,20 @@ PATHOLOGY_DATABASE = {
             "step_4_preventive_strategy": "Plant in full sun locations; avoid planting in shaded stagnant air pockets."
         }
     },
+    "early_stage_foliar_lesions": {
+        "crop": "General Crop / Solanaceous",
+        "disease_name": "Incipient Foliar Lesions (Early Disease Stage)",
+        "pathogen_type": "Fungal / Bacterial Onset",
+        "severity": "Low (Early Detection)",
+        "symptoms": "Localized micro-lesions, pinprick necrotic spots, or early chlorotic flecks beginning to form on the leaf lamina.",
+        "irrigation_telemetry_advice": "Critical window: disease is in inception stage. Adjust Module 1 irrigation to prevent free moisture on leaves for >4 hours.",
+        "treatment_plan": {
+            "step_1_immediate_action": "Inspect surrounding canopy for further micro-spots. Remove affected leaves if isolated to lower foliage.",
+            "step_2_organic_control": "Prophylactic spray of neem seed extract or Bacillus subtilis bio-fungicide to halt germination of spores.",
+            "step_3_chemical_treatment": "Broad-spectrum protectant spray (e.g., copper hydroxide or Mancozeb) at light dosage to protect adjacent foliage.",
+            "step_4_preventive_strategy": "Increase airflow and reduce humidity to arrest early disease establishment before full systemic spread."
+        }
+    },
     "healthy_leaf": {
         "crop": "General Crop",
         "disease_name": "Healthy Foliage (No Pathology Detected)",

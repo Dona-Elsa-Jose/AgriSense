@@ -144,28 +144,29 @@ def _run_pixel_computer_vision(image_bytes: bytes):
         mean_exg = sum_exg / total_leaf
 
         # Diagnostic classification strictly from computed visual features:
-        if mildew_ratio > 0.15:
+        if mildew_ratio > 0.08:
             selected_key = "powdery_mildew"
             conf = 93.5 + min(mildew_ratio * 15, 5.5)
-        elif chlorosis_ratio > 0.35:
+        elif chlorosis_ratio > 0.20:
             # High yellowing / rust pustules
             selected_key = "corn_common_rust"
             conf = 93.0 + min(chlorosis_ratio * 10, 6.0)
-        elif necrotic_ratio > 0.10:
+        elif necrotic_ratio >= 0.08:
             # Concentric target lesions / heavy necrosis
             selected_key = "tomato_early_blight"
             conf = 94.0 + min(necrotic_ratio * 15, 5.0)
-        elif necrotic_ratio > 0.015 or edge_intensity > 24.0:
+        elif necrotic_ratio >= 0.015 or edge_intensity > 22.0:
             # Discrete water-soaked necrotic spots
             selected_key = "bacterial_leaf_spot"
             conf = 92.5 + min(necrotic_ratio * 30, 6.0)
-        elif healthy_ratio > 0.80:
-            # Clean uniform green lamina
-            selected_key = "healthy_leaf"
-            conf = 96.0 + min(healthy_ratio * 3.5, 3.5)
+        elif necrotic_ratio >= 0.002 or chlorosis_ratio >= 0.015 or edge_intensity > 15.0:
+            # Early micro-lesions / incipient pinprick spots detected!
+            selected_key = "early_stage_foliar_lesions"
+            conf = 91.5 + min(necrotic_ratio * 50, 6.5)
         else:
+            # Clean uniform green lamina with virtually zero necrosis
             selected_key = "healthy_leaf"
-            conf = 94.2
+            conf = 97.0 + min(healthy_ratio * 2.5, 2.5)
 
         profile = get_disease_info(selected_key)
         
