@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 3: AI Leaf Pathology Scanner | SmartAgri Suite</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="brand-icon">🍃</div>
+        <div>
+          <h1>LeafPathology AI</h1>
+          <span class="sub-title">Module 3 · Computer Vision Agronomy</span>
+        </div>
+      </div>
+      
+      <div class="system-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Vision AI Active</span>
+        <span class="badge">SmartAgri Hub</span>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="grid-layout">
+      <!-- Left Column: Image Ingestion & Input -->
+      <section class="card upload-card">
+        <div class="card-header">
+          <h2>Leaf Scanner</h2>
+          <span class="badge">Active</span>
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept="image/*" class="file-input" />
+          <div class="drop-zone-content" id="dropZonePrompt">
+            <div class="upload-icon">📸</div>
+            <p class="drop-text"><strong>Drag & drop leaf photo</strong> or <span class="browse-btn">browse files</span></p>
+            <p class="drop-hint">Supports JPEG, PNG, WebP</p>
+          </div>
+
+          <!-- Preview & Scan Laser Animation -->
+          <div class="preview-container hidden" id="previewContainer">
+            <button id="removeImageBtn" class="remove-image-btn" title="Remove this image" type="button">✕ Remove</button>
+            <img id="imagePreview" alt="Leaf preview" />
+            <div class="scan-laser" id="scanLaser"></div>
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="button-row">
+          <button id="cameraBtn" class="btn btn-secondary">📷 Camera</button>
+          <button id="diagnoseBtn" class="btn btn-primary" disabled>🔬 Analyze Leaf</button>
+        </div>
+
+        <!-- Camera Video Feed -->
+        <div id="cameraFeedContainer" class="camera-feed-container hidden">
+          <video id="webcam" autoplay playsinline></video>
+          <div class="cam-controls">
+            <button id="snapBtn" class="btn btn-primary">Capture Frame</button>
+            <button id="closeCamBtn" class="btn btn-outline">Cancel</button>
+          </div>
+        </div>
+
+        <!-- Quick Demo Sample Selector -->
+        <div class="sample-section">
+          <label>Test Samples:</label>
+          <div class="sample-chips">
+            <button class="chip" data-sample="healthy">🌿 Healthy Leaf</button>
+            <button class="chip" data-sample="bacterial_spots">🍂 Leaf Spots</button>
+            <button class="chip" data-sample="yellow_chlorosis">🌽 Rust Leaf</button>
+            <button class="chip" data-sample="mildew_white">❄️ Powdery Mildew</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Diagnostic & Treatment Results -->
+      <section class="card results-card" id="resultsCard">
+        <div class="card-header">
+          <h2>Diagnostic Results</h2>
+          <span id="engineBadge" class="badge">Awaiting Scan</span>
+        </div>
+
+        <!-- Default Empty State -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">🔬</div>
+          <h3>Ready for Scan</h3>
+          <p>Upload or snap a leaf photo to diagnose plant health.</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state hidden">
+          <div class="spinner"></div>
+          <h3>Analyzing Leaf Pathology...</h3>
+          <p>Examining foliage health and pathogen symptoms</p>
+        </div>
+
+        <!-- Loaded Diagnosis Content -->
+        <div id="diagnosticResults" class="diagnostic-content hidden">
+          <!-- Top Row: Disease Title & Confidence Meter -->
+          <div class="diag-header-box">
+            <div>
+              <span class="crop-tag" id="cropName">Crop</span>
+              <h2 class="disease-title" id="diseaseName">Disease Name</h2>
+              <div class="meta-pills">
+                <span class="pill pathogen-pill" id="pathogenType">Fungal</span>
+                <span class="pill severity-pill" id="severityBadge">Moderate</span>
+              </div>
+            </div>
+            <div class="confidence-circle">
+              <div class="conf-value" id="confidenceValue">--%</div>
+              <div class="conf-label">Confidence</div>
+            </div>
+          </div>
+
+          <!-- Computer Vision Telemetry (Pixel metrics) -->
+          <div id="cvMetricsRow" class="cv-metrics-row hidden">
+            <div class="metric-badge">
+              <span class="metric-label">Chlorophyll (ExG):</span>
+              <span class="metric-val" id="mExg">--</span>
+            </div>
+            <div class="metric-badge">
+              <span class="metric-label">Necrosis Ratio:</span>
+              <span class="metric-val" id="mNecrosis">--</span>
+            </div>
+            <div class="metric-badge">
+              <span class="metric-label">Chlorosis Ratio:</span>
+              <span class="metric-val" id="mChlorosis">--</span>
+            </div>
+            <div class="metric-badge">
+              <span class="metric-label">Edge Contrast:</span>
+              <span class="metric-val" id="mEdge">--</span>
+            </div>
+          </div>
+
+          <!-- Symptoms Section -->
+          <div class="result-block">
+            <h3>Visual Symptoms</h3>
+            <p id="symptomsText" class="symptoms-text">--</p>
+          </div>
+
+          <!-- Irrigation Telemetry Link -->
+          <div class="telemetry-sync-box">
+            <div class="sync-icon">💧</div>
+            <div>
+              <strong>Irrigation & Telemetry Advisory:</strong>
+              <p id="irrigationAdvice">--</p>
+            </div>
+          </div>
+
+          <!-- Step-by-Step Treatment Plan -->
+          <div class="result-block">
+            <h3>Treatment Plan</h3>
+            <div class="steps-list">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div>
+                  <strong>Immediate Action</strong>
+                  <p id="step1">--</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div>
+                  <strong>Organic / Bio-Control</strong>
+                  <p id="step2">--</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div>
+                  <strong>Chemical Treatment</strong>
+                  <p id="step3">--</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">4</div>
+                <div>
+                  <strong>Prevention Strategy</strong>
+                  <p id="step4">--</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Export Data Button -->
+          <div class="export-row">
+            <button id="copyJsonBtn" class="btn btn-outline">📋 Copy Diagnostic Data</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
