@@ -1,24 +1,10 @@
 """
-Comprehensive Plant Pathology Knowledge Base
-Contains diagnostic data, severity levels, and multi-stage treatment plans
-for major agricultural crops and diseases across fungal, bacterial, and healthy states.
+Module 3: Plant Pathology Knowledge Base
+Contains diagnostic profiles, pathogen taxonomies, and multi-stage clinical treatment plans.
+Integrates directly with Module 1 (Smart Irrigation) to advise on watering adjustments.
 """
 
 PATHOLOGY_DATABASE = {
-    "bacterial_leaf_spot": {
-        "crop": "Tomato / Pepper",
-        "disease_name": "Bacterial Leaf Spot (Xanthomonas campestris)",
-        "pathogen_type": "Bacterial",
-        "severity": "High",
-        "symptoms": "Small, water-soaked angular dark brown lesions that don't cross leaf veins, often with translucent greasy borders and yellow halos.",
-        "irrigation_telemetry_advice": "Bacteria spread via water droplets and splash. Cease overhead irrigation immediately; reduce greenhouse relative humidity below 75%.",
-        "treatment_plan": {
-            "step_1_immediate_action": "Do NOT work in fields while foliage is wet. Prune and bag infected plants. Disinfect pruners with 10% bleach between cuts.",
-            "step_2_organic_control": "Apply copper bactericides (copper sulfate or copper hydroxide) tank-mixed with mancozeb for synergistic protection.",
-            "step_3_chemical_treatment": "In regions where copper-resistant strains occur, apply Agri-Mycin (Streptomycin sulfate) or Kasugamycin under strict local agricultural guidelines.",
-            "step_4_preventive_strategy": "Use certified hot-water-treated seeds. Implement a 2-to-3 year rotation away from solanaceous crops."
-        }
-    },
     "tomato_early_blight": {
         "crop": "Tomato",
         "disease_name": "Early Blight (Alternaria solani)",
@@ -75,6 +61,20 @@ PATHOLOGY_DATABASE = {
             "step_4_preventive_strategy": "Select rust-resistant hybrid seed varieties with Rp genes."
         }
     },
+    "bacterial_leaf_spot": {
+        "crop": "Tomato / Pepper",
+        "disease_name": "Bacterial Leaf Spot (Xanthomonas campestris)",
+        "pathogen_type": "Bacterial",
+        "severity": "High",
+        "symptoms": "Small, water-soaked angular dark brown lesions that don't cross leaf veins, often with translucent greasy borders and yellow halos.",
+        "irrigation_telemetry_advice": "Bacteria spread via water droplets and splash. Cease overhead irrigation immediately; reduce greenhouse relative humidity below 75%.",
+        "treatment_plan": {
+            "step_1_immediate_action": "Do NOT work in fields while foliage is wet. Prune and bag infected plants. Disinfect pruners with 10% bleach between cuts.",
+            "step_2_organic_control": "Apply copper bactericides (copper sulfate or copper hydroxide) tank-mixed with mancozeb for synergistic protection.",
+            "step_3_chemical_treatment": "In regions where copper-resistant strains occur, apply Agri-Mycin (Streptomycin sulfate) or Kasugamycin under strict local agricultural guidelines.",
+            "step_4_preventive_strategy": "Use certified hot-water-treated seeds. Implement a 2-to-3 year rotation away from solanaceous crops."
+        }
+    },
     "apple_scab": {
         "crop": "Apple",
         "disease_name": "Apple Scab (Venturia inaequalis)",
@@ -87,6 +87,20 @@ PATHOLOGY_DATABASE = {
             "step_2_organic_control": "Lime sulfur or liquid sulfur sprays during green-tip and tight-cluster stages.",
             "step_3_chemical_treatment": "Apply Captan or Myclobutanil beginning at bud break and repeated through petal fall.",
             "step_4_preventive_strategy": "Prune open-center canopy architecture to maximize sunlight and wind penetration."
+        }
+    },
+    "grape_black_rot": {
+        "crop": "Grape",
+        "disease_name": "Black Rot (Guignardia bidwellii)",
+        "pathogen_type": "Fungal",
+        "severity": "High",
+        "symptoms": "Small reddish-brown circular leaf spots with tiny black fruiting bodies (pycnidia); shriveled black mummified berries.",
+        "irrigation_telemetry_advice": "Spores require 6-24 hours of continuous leaf wetness. Maintain good canopy ventilation.",
+        "treatment_plan": {
+            "step_1_immediate_action": "Prune out mummified berry clusters and infected canes during dormancy.",
+            "step_2_organic_control": "Bordeaux mixture (copper sulfate + slaked lime) applied early in the growth season.",
+            "step_3_chemical_treatment": "Mancozeb or Ziram applied from 1-inch shoot growth until 4 weeks post-bloom.",
+            "step_4_preventive_strategy": "Shoot positioning and leaf pulling around grape bunches to lower microclimate humidity."
         }
     },
     "powdery_mildew": {
@@ -107,7 +121,7 @@ PATHOLOGY_DATABASE = {
         "crop": "General Crop / Solanaceous",
         "disease_name": "Incipient Foliar Lesions (Early Disease Stage)",
         "pathogen_type": "Fungal / Bacterial Onset",
-        "severity": "Low (Early Detection)",
+        "severity": "Low",
         "symptoms": "Localized micro-lesions, pinprick necrotic spots, or early chlorotic flecks beginning to form on the leaf lamina.",
         "irrigation_telemetry_advice": "Critical window: disease is in inception stage. Adjust Module 1 irrigation to prevent free moisture on leaves for >4 hours.",
         "treatment_plan": {
@@ -134,9 +148,11 @@ PATHOLOGY_DATABASE = {
 }
 
 def get_disease_info(key: str):
+    """Retrieve detailed pathology profile by key."""
     return PATHOLOGY_DATABASE.get(key, PATHOLOGY_DATABASE["healthy_leaf"])
 
 def list_all_diseases():
+    """Return all available pathology keys with metadata."""
     return [
         {
             "key": k,
